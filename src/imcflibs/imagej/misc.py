@@ -713,27 +713,51 @@ def save_script_parameters(destination, save_file_name="script_parameters.txt"):
         Directory where the script parameters file will be saved.
     save_file_name : str, optional
         Name of the script parameters file, by default "script_parameters.txt".
+    
+    Notes
+    ----------
+    This function records all input parameters defined in the Fiji script header
+    (e.g. #@ String) to a text file.
+
+    The following parameters are excluded:
+    - Parameters explicitly declared with `style="password"` are ignored.
+    - Runtime keys (e.g. 'SJLOG', 'COMMAND', 'RM') are also skipped.
     """
     # Get the ScriptModule object from globals made by Fiji
     module = globals().get("org.scijava.script.ScriptModule")
     if module is None:
-        print("No ScriptModule found- skipping saving script parameters.")
+        print("No ScriptModule found — skipping saving script parameters.")
         return
 
-    # Retrieve the input parameters from the scijava module
-    inputs = module.getInputs()
     destination = str(destination)
     out_path = os.path.join(destination, save_file_name)
-    
-    # Write the parameters to output file
-    skip_keys = ["PASSWORD", "USERNAME", "SJLOG", "COMMAND", "RM"]
+
+    # Access script metadata and parameter map
+    script_info = module.getInfo()
+    inputs = module.getInputs()
+
+    # Keys to skip explicitly (case-insensitive match)
+    skip_keys = ["USERNAME", "SJLOG", "COMMAND", "RM"]
+
     with open(out_path, "w") as f:
-        for key in inputs.keySet():
-            if any(s in key.upper() for s in skip_keys):
+        for item in script_info.inputs():
+            key = item.getName()
+
+            # Skip if any keys are in the skip list
+            if any(skip in key.upper() for skip in skip_keys):
                 continue
-            val = inputs.get(key)
-            f.write("%s: %s\n" % (key, str(val)))
+
+            # Skip if parameter is declared with style="password"
+            style = item.getWidgetStyle()
+            if style is not None and style.lower() == "password":
+                continue
+
+            # Write all other parameters
+            if inputs.containsKey(key):
+                val = inputs.get(key)
+                f.write("%s: %s\n" % (key, str(val)))
 
     print("Saved script parameters to: %s" % out_path)
+
 
 
