@@ -702,7 +702,7 @@ def run_imarisconvert(file_path):
         IJ.log("Conversion to .ims is finished.")
     else:
         IJ.log("Conversion failed with error code: %d" % result)
-    
+
 
 def save_script_parameters(destination, save_file_name="script_parameters.txt"):
     """Save all Fiji script parameters to a text file.
@@ -713,9 +713,9 @@ def save_script_parameters(destination, save_file_name="script_parameters.txt"):
         Directory where the script parameters file will be saved.
     save_file_name : str, optional
         Name of the script parameters file, by default "script_parameters.txt".
-    
+
     Notes
-    ----------
+    -----
     This function records all input parameters defined in the Fiji script header
     (e.g. #@ String) to a text file.
 
@@ -758,6 +758,3 @@ def save_script_parameters(destination, save_file_name="script_parameters.txt"):
                 f.write("%s: %s\n" % (key, str(val)))
 
     print("Saved script parameters to: %s" % out_path)
-
-
-
