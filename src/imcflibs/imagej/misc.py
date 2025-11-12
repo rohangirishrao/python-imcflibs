@@ -731,11 +731,11 @@ def save_script_parameters(destination, save_file_name="script_parameters.txt"):
     destination = str(destination)
     out_path = os.path.join(destination, save_file_name)
 
-    # Access script metadata and parameter map
+    # Access script metadata and inputs
     script_info = module.getInfo()
     inputs = module.getInputs()
 
-    # Keys to skip explicitly (case-insensitive match)
+    # Keys to skip explicitly
     skip_keys = ["USERNAME", "SJLOG", "COMMAND", "RM"]
 
     with open(out_path, "w") as f:
@@ -751,7 +751,6 @@ def save_script_parameters(destination, save_file_name="script_parameters.txt"):
             if style is not None and style.lower() == "password":
                 continue
 
-            # Write all other parameters
             if inputs.containsKey(key):
                 val = inputs.get(key)
                 f.write("%s: %s\n" % (key, str(val)))
